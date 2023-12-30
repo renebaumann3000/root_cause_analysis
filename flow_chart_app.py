@@ -159,104 +159,104 @@ product_categories = {
     ],
 }
 
-# Streamlit UI
-st.title("Root Cause Predictor")
+def flow_chart_page():
+    st.title("Root Cause Predictor")
 
-# Business Type Dropdown
-selected_business_type = st.selectbox("Select Business Type", business_types)
+    # Business Type Dropdown
+    selected_business_type = st.selectbox("Select Business Type", business_types)
 
-# Specialisation Dropdown
-if selected_business_type in specialisations:
-    selected_specialisation = st.selectbox("Select Specialisation", specialisations[selected_business_type])
-else:
-    selected_specialisation = None
+    # Specialisation Dropdown
+    if selected_business_type in specialisations:
+        selected_specialisation = st.selectbox("Select Specialisation", specialisations[selected_business_type])
+    else:
+        selected_specialisation = None
 
-# Product Category Dropdown
-if selected_specialisation in product_categories:
-    selected_product_category = st.selectbox("Select Product Category", product_categories[selected_specialisation])
-else:
-    selected_product_category = None
+    # Product Category Dropdown
+    if selected_specialisation in product_categories:
+        selected_product_category = st.selectbox("Select Product Category", product_categories[selected_specialisation])
+    else:
+        selected_product_category = None
 
-save_dir = r"C:\Users\shiri\root_cause_analysis\jupyter_notebooks"
-model_path = os.path.join(save_dir, "distilbert_root_cause_model3")
-model = DistilBertForSequenceClassification.from_pretrained(model_path)
-tokenizer_path = os.path.join(save_dir, "distilbert_tokenizer3")
-tokenizer = DistilBertTokenizer.from_pretrained(tokenizer_path)
-label_encoder_path = os.path.join(save_dir, "label_encoder3.pkl")
-label_encoder = joblib.load(label_encoder_path)
+    save_dir = r"C:\Users\shiri\root_cause_analysis\jupyter_notebooks"
+    model_path = os.path.join(save_dir, "distilbert_root_cause_model3")
+    model = DistilBertForSequenceClassification.from_pretrained(model_path)
+    tokenizer_path = os.path.join(save_dir, "distilbert_tokenizer3")
+    tokenizer = DistilBertTokenizer.from_pretrained(tokenizer_path)
+    label_encoder_path = os.path.join(save_dir, "label_encoder3.pkl")
+    label_encoder = joblib.load(label_encoder_path)
 
-# Initialize Keras-OCR pipeline
-pipeline = keras_ocr.pipeline.Pipeline()
+    # Initialize Keras-OCR pipeline
+    pipeline = keras_ocr.pipeline.Pipeline()
 
-# Function to extract text from image using Keras-OCR
-def extract_text_from_image(image_path):
-    # Use the pipeline to do OCR on the provided image
-    images = [keras_ocr.tools.read(image_path)]
-    prediction_groups = pipeline.recognize(images)
+    # Function to extract text from image using Keras-OCR
+    def extract_text_from_image(image_path):
+        # Use the pipeline to do OCR on the provided image
+        images = [keras_ocr.tools.read(image_path)]
+        prediction_groups = pipeline.recognize(images)
 
-    # Extracting text
-    extracted_text = " ".join([word[0] for word in prediction_groups[0]])
-    return extracted_text
+        # Extracting text
+        extracted_text = " ".join([word[0] for word in prediction_groups[0]])
+        return extracted_text
 
-# Function to predict root causes and return probabilities
-def predict_root_causes(contact_driver_text):
-    # Tokenize the input text
-    inputs = tokenizer(contact_driver_text, return_tensors="pt", truncation=True, padding=True, max_length=512)
+    # Function to predict root causes and return probabilities
+    def predict_root_causes(contact_driver_text):
+        # Tokenize the input text
+        inputs = tokenizer(contact_driver_text, return_tensors="pt", truncation=True, padding=True, max_length=512)
 
-    # Get model predictions (logits)
-    with torch.no_grad():
-        logits = model(**inputs).logits
+        # Get model predictions (logits)
+        with torch.no_grad():
+            logits = model(**inputs).logits
 
-    # Apply softmax to convert logits to probabilities
-    probabilities = torch.nn.functional.softmax(logits, dim=1).flatten()
+        # Apply softmax to convert logits to probabilities
+        probabilities = torch.nn.functional.softmax(logits, dim=1).flatten()
 
-    # Get the indices of the top 5 predictions
-    top5_indices = torch.argsort(probabilities, descending=True)[:5]
-    top5_probs = probabilities[top5_indices]
+        # Get the indices of the top 5 predictions
+        top5_indices = torch.argsort(probabilities, descending=True)[:5]
+        top5_probs = probabilities[top5_indices]
 
-    # Convert indices to class names and probabilities to a list
-    top5_classes = [label_encoder.classes_[i] for i in top5_indices]
-    top5_probs_values = top5_probs.tolist()
+        # Convert indices to class names and probabilities to a list
+        top5_classes = [label_encoder.classes_[i] for i in top5_indices]
+        top5_probs_values = top5_probs.tolist()
 
-    return top5_classes, top5_probs_values
+        return top5_classes, top5_probs_values
 
-# Streamlit UI for user input
-st.title("Root Cause Predictor from Image")
+    # Streamlit UI for user input
+    st.title("Root Cause Predictor from Image")
 
-# File uploader for image
-uploaded_file = st.file_uploader("Upload an image:", type=["jpg", "jpeg", "png"])
+    # File uploader for image
+    uploaded_file = st.file_uploader("Upload an image:", type=["jpg", "jpeg", "png"])
 
-# Text extraction and prediction
-if uploaded_file is not None and st.button('Predict'):
-    # Use the pipeline to do OCR on the provided image
-    image = keras_ocr.tools.read(uploaded_file)
-    prediction_groups = pipeline.recognize([image])
+    # Text extraction and prediction
+    if uploaded_file is not None and st.button('Predict'):
+        # Use the pipeline to do OCR on the provided image
+        image = keras_ocr.tools.read(uploaded_file)
+        prediction_groups = pipeline.recognize([image])
 
-    # Extracting text
-    extracted_text = " ".join([word[0] for word in prediction_groups[0]])
-    
-    # Display extracted text
-    st.subheader("Extracted Text from Image:")
-    st.write(extracted_text)
+        # Extracting text
+        extracted_text = " ".join([word[0] for word in prediction_groups[0]])
+        
+        # Display extracted text
+        st.subheader("Extracted Text from Image:")
+        st.write(extracted_text)
 
-    # Predict root causes
-    predicted_root_causes, probabilities = predict_root_causes(extracted_text)
-    
-    # Display predicted root causes
-    st.subheader("Top 5 Predicted Root Causes:")
-    for cause, prob in zip(predicted_root_causes, probabilities):
-        st.write(f"{cause}: {prob:.2f}")
+        # Predict root causes
+        predicted_root_causes, probabilities = predict_root_causes(extracted_text)
+        
+        # Display predicted root causes
+        st.subheader("Top 5 Predicted Root Causes:")
+        for cause, prob in zip(predicted_root_causes, probabilities):
+            st.write(f"{cause}: {prob:.2f}")
 
-    # Create a bar chart for the predicted root causes
-    fig = go.Figure(go.Bar(
-        x=probabilities,
-        y=predicted_root_causes,
-        orientation='h'
-    ))
-    fig.update_layout(
-        title='Predicted Root Cause Probabilities',
-        xaxis_title='Probability',
-        yaxis_title='Root Cause',
-        yaxis=dict(autorange="reversed")  # Reverse the y-axis to show the highest probability on top
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # Create a bar chart for the predicted root causes
+        fig = go.Figure(go.Bar(
+            x=probabilities,
+            y=predicted_root_causes,
+            orientation='h'
+        ))
+        fig.update_layout(
+            title='Predicted Root Cause Probabilities',
+            xaxis_title='Probability',
+            yaxis_title='Root Cause',
+            yaxis=dict(autorange="reversed")  # Reverse the y-axis to show the highest probability on top
+        )
+        st.plotly_chart(fig, use_container_width=True)
