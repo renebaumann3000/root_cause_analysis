@@ -1,7 +1,6 @@
 f https://download.pytorch.org/whl/torch_stable.html
 streamlit==1.12.2
-torch==1.8.1+cpu
-torchvision==0.9.1+cpu
+torch==1.12.1+cpu
 transformers==4.20.1
 numpy==1.22.4
 joblib==1.1.0
