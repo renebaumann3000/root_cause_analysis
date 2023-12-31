@@ -1,8 +1,6 @@
-core.Microsoft*
-core.mongo*
-core.python*
-env.py
+inputs/malaria_dataset/cell_images/test
+inputs/malaria_dataset/cell_images/train
+kaggle.json
+*.ipynb
 __pycache__/
-*.py[cod]
-node_modules/
-.github/
+

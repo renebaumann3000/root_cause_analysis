@@ -1,6 +1,7 @@
 import streamlit as st
-from root_cause_app import root_cause_page
-from flow_chart_app import flow_chart_page
+from app_pages.summary_app import summary_page
+from app_pages.root_cause_app import root_cause_page
+from app_pages.flow_chart_app import flow_chart_page
 
 st.set_page_config(page_title="AI powered Root Cause Analysis")
 
@@ -32,6 +33,7 @@ class MultiPage:
 app = MultiPage("AI powered Root Cause Analysis")
 
 # Add pages to the app
+app.add_page("Project Summary", summary_page)
 app.add_page("Root Cause Predictor", root_cause_page)
 app.add_page("Flow Chart Predictor", flow_chart_page)
 

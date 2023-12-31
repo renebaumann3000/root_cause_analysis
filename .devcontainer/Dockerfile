@@ -4,9 +4,10 @@ ENV PYTHON_VERSION 3.8.12
 ENV DEBIAN_FRONTEND=noninteractive
 #Set of all dependencies needed for pyenv to work on Ubuntu
 RUN apt-get update \ 
-    && apt-get install -y --no-install-recommends make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 git postgresql-client telnet
+    && apt-get install -y --no-install-recommends make build-essential libssl-dev libpq-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev mecab-ipadic-utf8 git postgresql-client telnet unzip
 
 RUN curl https://cli-assets.heroku.com/install.sh | sh
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
 
 ARG USERNAME=codeany
 RUN useradd -ms /bin/bash $USERNAME
@@ -25,7 +26,9 @@ RUN set -ex \
     && pyenv global $PYTHON_VERSION \
     && pyenv rehash \
     && python3 -m pip install --no-cache-dir --upgrade pip \
-    && python3 -m pip install --no-cache-dir --upgrade setuptools wheel virtualenv pipenv pylint rope flake8  mypy autopep8 pep8 pylama pydocstyle bandit notebook twine
+    && python3 -m pip install --no-cache-dir --upgrade setuptools wheel virtualenv pipenv pylint rope flake8  mypy autopep8 pep8 pylama pydocstyle bandit notebook twine jupyter
+
+ENV PATH=$PATH:"/home/codeany/.local/bin"
 
 RUN echo 'alias python=python3' >> ~/.bashrc && \
     echo 'export PIP_USER=yes' >> ~/.bashrc && \
@@ -37,6 +40,11 @@ RUN echo 'alias heroku_config=". $HOME/.theia/heroku_config.sh"' >> ~/.bashrc
 
 COPY ./build-assets/make_url.py /home/$USERNAME/.theia/make_url.py
 RUN echo 'alias make_url="python3 $HOME/.theia/make_url.py "' >> ~/.bashrc
+
+RUN mkdir -p /home/$USERNAME/.jupyter/custom
+COPY ./build-assets/jupyter_notebook_config.py /home/$USERNAME/.jupyter/jupyter_notebook_config.py
+
+COPY ./build-assets/custom.js /home/$USERNAME/.jupyter/custom/custom.js
 
 USER root
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME/.theia
