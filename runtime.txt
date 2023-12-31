@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 python-3.12.1
+=======
+python-3.9.18
+>>>>>>> 31feff751bb6a5f15f43e06e2cf6266fd37bdb29
