@@ -4,4 +4,4 @@ numpy==1.22.4
 joblib==1.1.0
 plotly==5.8.0
 keras-ocr==0.8.8
-﻿streamlit==1.12.2
+streamlit==1.12.2
