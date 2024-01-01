@@ -6,4 +6,4 @@ joblib==1.1.0
 plotly==5.8.0
 scikit-learn==0.24.2
 keras-ocr==0.8.8
-opencv-python==4.5.1.48
+opencv-python==3.4.15
