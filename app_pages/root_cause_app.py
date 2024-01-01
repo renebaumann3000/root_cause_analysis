@@ -183,7 +183,7 @@ def root_cause_page():
         selected_product_category = None
 
     # Load the model
-    save_dir = "/app/outputs/ml_pipeline"
+    save_dir = "outputs/ml_pipeline"
     model_path = os.path.join(save_dir, "distilbert_root_cause_model3")
     model = DistilBertForSequenceClassification.from_pretrained(model_path)
 
