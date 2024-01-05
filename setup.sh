@@ -1,5 +1,8 @@
 #!/bin/bash
 
+git lfs install
+git lfs pull
+
 # Custom PyTorch CPU-only installation
 pip install --index-url https://download.pytorch.org/whl/cpu torch==2.1.1
 

@@ -22,7 +22,7 @@ def summary_page():
 
     st.header("Solution")
     st.write("""
-    This pre-alpha version of the AI-powered root cause analysis tool is envisioned to demonstrate the potential of big data in overcoming these challenges. By integrating limited yet crucial data inputs, such as customer service contact drivers and process flow charts, the AI aims to intelligently predict potential root causes. This approach not only simplifies the data input process but also harnesses the latent power of big data, opening new horizons in predictive analytics.
+    This pre-alpha version of the AI-powered root cause analysis tool is envisioned to demonstrate the potential of big data in overcoming these challenges. By integrating limited yet crucial data inputs, such as customer service contact drivers, the AI aims to intelligently predict potential root causes. This approach not only simplifies the data input process but also harnesses the latent power of big data, opening new horizons in predictive analytics.
     """)
 
     st.header("Impact")
